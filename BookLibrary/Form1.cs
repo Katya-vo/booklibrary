@@ -26,33 +26,40 @@ namespace BookLibrary
             {
                 using (BookLibraryContext context = new BookLibraryContext())
                 {
-                    if (!await context.Books.AnyAsync())
+                    string search = textBoxSearchBooks.Text.Trim();
+
+                    var query = context.Books
+                        .Include(b => b.Author)
+                        .AsQueryable();
+
+                    if (search != "")
                     {
-                        dataGridViewBook.DataSource = null;
-                        return;
+                        query = query.Where(b =>
+                            b.Title.Contains(search) ||
+                            b.Author.FirstName.Contains(search) ||
+                            b.Author.Surname.Contains(search));
                     }
-                    var books = await context.Books
-                    .Include(b => b.Author)
-                    .OrderBy(b => b.Title)
-                    .Select(b => new
-                    {
-                        b.Id,
-                        b.Title,
-                        b.Pages,
-                        b.YearOfPublishing,
-                        b.Price,
-                        Author = b.Author.FirstName + " " + b.Author.Surname
-                    })
-                    .ToListAsync();
+
+                    var books = await query
+                        .OrderBy(b => b.Title)
+                        .Select(b => new
+                        {
+                            b.Id,
+                            b.Title,
+                            b.Pages,
+                            b.YearOfPublishing,
+                            b.Price,
+                            Author = b.Author.FirstName + " " + b.Author.Surname
+                        })
+                        .ToListAsync();
+
                     dataGridViewBook.DataSource = null;
                     dataGridViewBook.DataSource = books;
-
                 }
             }
             catch (Exception ex)
             {
-
-                MessageBox.Show($"Помилка при завантажені БД. {ex.Message}");
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -62,22 +69,29 @@ namespace BookLibrary
             {
                 using (BookLibraryContext context = new BookLibraryContext())
                 {
-                    if (!await context.Authors.AnyAsync())
+                    string search = textBoxSearchAuthors.Text.Trim();
+
+                    var query = context.Authors.AsQueryable();
+
+                    if (search != "")
                     {
-                        dataGridViewAuthor.DataSource = null;
-                        return;
+                        query = query.Where(a =>
+                            a.FirstName.Contains(search) ||
+                            a.Surname.Contains(search));
                     }
-                    var authors = await context.Authors
-                    .OrderBy(a => a.Surname)
-                    .ThenBy(a => a.FirstName)
-                    .Select(a => new
-                    {
-                        a.Id,
-                        a.FirstName,
-                        a.Surname,
-                        a.DateOfBirth
-                    })
-                    .ToListAsync();
+
+                    var authors = await query
+                        .OrderBy(a => a.Surname)
+                        .ThenBy(a => a.FirstName)
+                        .Select(a => new
+                        {
+                            a.Id,
+                            a.FirstName,
+                            a.Surname,
+                            a.DateOfBirth
+                        })
+                        .ToListAsync();
+
                     dataGridViewAuthor.DataSource = null;
                     dataGridViewAuthor.DataSource = authors;
                     dataGridViewAuthor.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -85,8 +99,7 @@ namespace BookLibrary
             }
             catch (Exception ex)
             {
-
-                MessageBox.Show($"Помилка при завантажені БД. {ex.Message}");
+                MessageBox.Show($"Помилка при завантаженні БД. {ex.Message}");
             }
         }
 
@@ -226,6 +239,16 @@ namespace BookLibrary
                     }
                 }
             }
+        }
+
+        private void textBoxSearchBooks_TextChanged(object sender, EventArgs e)
+        {
+            _ = UpdateBooks();
+        }
+
+        private void textBoxSearchAuthors_TextChanged(object sender, EventArgs e)
+        {
+            _ = UpdateAuthors();
         }
     }
 }
