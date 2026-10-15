@@ -31,7 +31,10 @@ namespace BookLibrary
                         dataGridViewBook.DataSource = null;
                         return;
                     }
-                    var books = await context.Books.Include(b => b.Author).Select(b => new
+                    var books = await context.Books
+                    .Include(b => b.Author)
+                    .OrderBy(b => b.Title)
+                    .Select(b => new
                     {
                         b.Id,
                         b.Title,
@@ -39,7 +42,8 @@ namespace BookLibrary
                         b.YearOfPublishing,
                         b.Price,
                         Author = b.Author.FirstName + " " + b.Author.Surname
-                    }).ToListAsync();
+                    })
+                    .ToListAsync();
                     dataGridViewBook.DataSource = null;
                     dataGridViewBook.DataSource = books;
 
@@ -63,14 +67,17 @@ namespace BookLibrary
                         dataGridViewAuthor.DataSource = null;
                         return;
                     }
-                    var authors = await context.Authors.Select(a => new
+                    var authors = await context.Authors
+                    .OrderBy(a => a.Surname)
+                    .ThenBy(a => a.FirstName)
+                    .Select(a => new
                     {
                         a.Id,
                         a.FirstName,
                         a.Surname,
                         a.DateOfBirth
-
-                    }).ToListAsync();
+                    })
+                    .ToListAsync();
                     dataGridViewAuthor.DataSource = null;
                     dataGridViewAuthor.DataSource = authors;
                     dataGridViewAuthor.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
