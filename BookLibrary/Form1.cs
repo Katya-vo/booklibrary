@@ -5,9 +5,19 @@ namespace BookLibrary
 {
     public partial class Form1 : Form
     {
+        private string sortColumnBooks = "Title";
+        private bool sortAscendingBooks = true;
         public Form1()
         {
             InitializeComponent();
+            dataGridViewBook.AllowUserToOrderColumns = false;
+            dataGridViewBook.DataBindingComplete += (s, e) =>
+            {
+                foreach (DataGridViewColumn column in dataGridViewBook.Columns)
+                {
+                    column.SortMode = DataGridViewColumnSortMode.Programmatic;
+                }
+            };
         }
 
         private async void Form1_Load(object sender, EventArgs e)
@@ -19,6 +29,7 @@ namespace BookLibrary
             await UpdateAuthors();
             await UpdateBooks();
         }
+
 
         private async Task UpdateBooks()
         {
@@ -40,21 +51,73 @@ namespace BookLibrary
                             b.Author.Surname.Contains(search));
                     }
 
-                    var books = await query
-                        .OrderBy(b => b.Title)
-                        .Select(b => new
-                        {
-                            b.Id,
-                            b.Title,
-                            b.Pages,
-                            b.YearOfPublishing,
-                            b.Price,
-                            Author = b.Author.FirstName + " " + b.Author.Surname
-                        })
-                        .ToListAsync();
+                    var books = await query.ToListAsync();
+
+
+
+                    switch (sortColumnBooks)
+                    {
+                        case "Pages":
+                            books = sortAscendingBooks
+                                ? books.OrderBy(b => b.Pages).ToList()
+                                : books.OrderByDescending(b => b.Pages).ToList();
+                            break;
+
+                        case "YearOfPublishing":
+                            books = sortAscendingBooks
+                                ? books.OrderBy(b => b.YearOfPublishing).ToList()
+                                : books.OrderByDescending(b => b.YearOfPublishing).ToList();
+                            break;
+
+                        case "Price":
+                            books = sortAscendingBooks
+                                ? books.OrderBy(b => b.Price).ToList()
+                                : books.OrderByDescending(b => b.Price).ToList();
+                            break;
+
+                        case "Genre":
+                            books = sortAscendingBooks
+                                ? books.OrderBy(b => b.Genre).ToList()
+                                : books.OrderByDescending(b => b.Genre).ToList();
+                            break;
+
+                        case "Publisher":
+                            books = sortAscendingBooks
+                                ? books.OrderBy(b => b.Publisher).ToList()
+                                : books.OrderByDescending(b => b.Publisher).ToList();
+                            break;
+
+                        case "Language":
+                            books = sortAscendingBooks
+                                ? books.OrderBy(b => b.Language).ToList()
+                                : books.OrderByDescending(b => b.Language).ToList();
+                            break;
+
+                        default:
+                            books = sortAscendingBooks
+                                ? books.OrderBy(b => b.Title).ToList()
+                                : books.OrderByDescending(b => b.Title).ToList();
+                            break;
+                    }
+
+
+
+                    var result = books.Select(b => new
+                    {
+                        b.Id,
+                        b.Title,
+                        b.Pages,
+                        b.YearOfPublishing,
+                        b.Price,
+                        b.Genre,
+                        b.Publisher,
+                        b.Language,
+                        Author = b.Author.FirstName + " " + b.Author.Surname
+                    }).ToList();
 
                     dataGridViewBook.DataSource = null;
-                    dataGridViewBook.DataSource = books;
+                    dataGridViewBook.DataSource = result;
+                    dataGridViewBook.Refresh();
                 }
             }
             catch (Exception ex)
@@ -62,6 +125,42 @@ namespace BookLibrary
                 MessageBox.Show(ex.Message);
             }
         }
+
+
+        private object GetBookSortValue(BookLibrary.Models.Book b, string column)
+        {
+            switch (column)
+            {
+                case "Title": return b.Title ?? "";
+                case "Pages": return b.Pages;
+                case "YearOfPublishing": return b.YearOfPublishing;
+                case "Price": return b.Price;
+                case "Genre": return b.Genre ?? "";
+                case "Publisher": return b.Publisher ?? "";
+                case "Language": return b.Language ?? "";
+                default: return b.Title ?? "";
+            }
+        }
+
+
+
+
+        private async void dataGridViewBook_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string column = dataGridViewBook.Columns[e.ColumnIndex].DataPropertyName;
+
+            if (sortColumnBooks == column)
+                sortAscendingBooks = !sortAscendingBooks;
+            else
+            {
+                sortColumnBooks = column;
+                sortAscendingBooks = true;
+            }
+
+            await UpdateBooks();
+        }
+
+
 
         private async Task UpdateAuthors()
         {
@@ -250,6 +349,7 @@ namespace BookLibrary
         {
             _ = UpdateAuthors();
         }
+
     }
 }
 

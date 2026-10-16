@@ -77,7 +77,7 @@
             // 
             // textBoxSearchAuthors
             // 
-            textBoxSearchAuthors.Location = new Point(3, 7);
+            textBoxSearchAuthors.Location = new Point(3, 0);
             textBoxSearchAuthors.Name = "textBoxSearchAuthors";
             textBoxSearchAuthors.PlaceholderText = "Поиск автора по имени или фамилии...";
             textBoxSearchAuthors.Size = new Size(664, 23);
@@ -120,11 +120,11 @@
             // dataGridViewAuthor
             // 
             dataGridViewAuthor.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewAuthor.Location = new Point(3, 7);
+            dataGridViewAuthor.Location = new Point(3, 21);
             dataGridViewAuthor.Margin = new Padding(3, 2, 3, 2);
             dataGridViewAuthor.Name = "dataGridViewAuthor";
             dataGridViewAuthor.RowHeadersWidth = 51;
-            dataGridViewAuthor.Size = new Size(664, 229);
+            dataGridViewAuthor.Size = new Size(664, 215);
             dataGridViewAuthor.TabIndex = 0;
             // 
             // tabPage2
@@ -145,7 +145,7 @@
             // 
             // textBoxSearchBooks
             // 
-            textBoxSearchBooks.Location = new Point(3, 6);
+            textBoxSearchBooks.Location = new Point(4, 0);
             textBoxSearchBooks.Name = "textBoxSearchBooks";
             textBoxSearchBooks.PlaceholderText = "Поиск книги по названию...";
             textBoxSearchBooks.Size = new Size(664, 23);
@@ -155,12 +155,13 @@
             // dataGridViewBook
             // 
             dataGridViewBook.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewBook.Location = new Point(3, 6);
+            dataGridViewBook.Location = new Point(3, 23);
             dataGridViewBook.Margin = new Padding(3, 2, 3, 2);
             dataGridViewBook.Name = "dataGridViewBook";
             dataGridViewBook.RowHeadersWidth = 51;
-            dataGridViewBook.Size = new Size(664, 250);
+            dataGridViewBook.Size = new Size(664, 233);
             dataGridViewBook.TabIndex = 5;
+            dataGridViewBook.ColumnHeaderMouseClick += dataGridViewBook_ColumnHeaderMouseClick;
             // 
             // btnDeleteBook
             // 

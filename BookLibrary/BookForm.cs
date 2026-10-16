@@ -40,6 +40,9 @@ namespace BookLibrary
                 book.YearOfPublishing = int.Parse(txtBoxYear.Text);
                 book.Pages = int.Parse(txtBoxPages.Text);
                 book.Price = Convert.ToDecimal(txtBoxPrice.Text);
+                book.Genre = txtBoxGenre.Text.Trim();
+                book.Publisher = txtBoxPublisher.Text.Trim();
+                book.Language = txtBoxLanguage.Text.Trim();
             }
             else
             {
@@ -55,7 +58,7 @@ namespace BookLibrary
 
         private void BookForm_Load(object sender, EventArgs e)
         {
-            using(BookLibraryContext context=new BookLibraryContext())
+            using (BookLibraryContext context = new BookLibraryContext())
             {
                 comboBox1.DataSource = null;
                 comboBox1.DisplayMember = nameof(Author.Fullname);

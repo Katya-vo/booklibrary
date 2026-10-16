@@ -11,6 +11,9 @@ namespace BookLibrary.Models
         public int Pages { get; set; }
         public decimal Price { get; set; }
         public int YearOfPublishing { get; set; }
+        public string Genre { get; set; }
+        public string Publisher { get; set; }
+        public string Language { get; set; }
         public int AuthorId { get; set; }
         public virtual Author Author { get; set; }
     }
