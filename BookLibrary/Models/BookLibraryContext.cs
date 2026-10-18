@@ -9,6 +9,7 @@ namespace BookLibrary.Models
     {
         public virtual DbSet<Author> Authors { get; set; }
         public virtual DbSet<Book> Books { get; set; }
+        public virtual DbSet<Client> Clients { get; set; }
         public BookLibraryContext()
         {
         }
@@ -44,6 +45,21 @@ namespace BookLibrary.Models
                       .WithMany(p => p.Books)
                       .HasForeignKey(d => d.AuthorId)
                       .OnDelete(DeleteBehavior.Cascade);
+            });
+            modelBuilder.Entity<Client>(entity =>
+            {
+                entity.ToTable("Clients");
+
+                entity.HasKey(e => e.id);
+
+                entity.Property(e => e.id).HasColumnName("Id");
+                entity.Property(e => e.name).HasColumnName("Name").IsRequired();
+                entity.Property(e => e.username).HasColumnName("Username").IsRequired();
+                entity.Property(e => e.password).HasColumnName("Password").IsRequired();
+                entity.Property(e => e.bookId).HasColumnName("BookId");
+                entity.Property(e => e.borrowUntil).HasColumnName("BorrowUntil");
+
+                entity.HasIndex(e => e.username).IsUnique();
             });
         }
     }
