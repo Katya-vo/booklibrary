@@ -5,11 +5,20 @@ namespace BookLibrary
 {
     public partial class Form1 : Form
     {
+        private string sortColumnAuthors = "Surname";
+        private bool sortAscendingAuthors = true;
         private string sortColumnBooks = "Title";
         private bool sortAscendingBooks = true;
         public Form1()
         {
             InitializeComponent();
+            dataGridViewAuthor.AllowUserToOrderColumns = false;
+
+            foreach (DataGridViewColumn column in dataGridViewAuthor.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.Programmatic;
+            }
+            dataGridViewAuthor.ColumnHeaderMouseClick += dataGridViewAuthor_ColumnHeaderMouseClick;
             dataGridViewBook.AllowUserToOrderColumns = false;
             dataGridViewBook.DataBindingComplete += (s, e) =>
             {
@@ -179,15 +188,38 @@ namespace BookLibrary
                             a.Surname.Contains(search));
                     }
 
+                    switch (sortColumnAuthors)
+                    {
+                        case "FirstName":
+                            query = sortAscendingAuthors ? query.OrderBy(a => a.FirstName) : query.OrderByDescending(a => a.FirstName);
+                            break;
+
+                        case "DateOfBirth":
+                            query = sortAscendingAuthors ? query.OrderBy(a => a.DateOfBirth) : query.OrderByDescending(a => a.DateOfBirth);
+                            break;
+
+                        case "DateOfDeath":
+                            query = sortAscendingAuthors ? query.OrderBy(a => a.DateOfDeath) : query.OrderByDescending(a => a.DateOfDeath);
+                            break;
+
+                        case "CountryOfBirth":
+                            query = sortAscendingAuthors ? query.OrderBy(a => a.CountryOfBirth) : query.OrderByDescending(a => a.CountryOfBirth);
+                            break;
+
+                        default:
+                            query = sortAscendingAuthors ? query.OrderBy(a => a.Surname).ThenBy(a => a.FirstName) : query.OrderByDescending(a => a.Surname).ThenByDescending(a => a.FirstName);
+                            break;
+                    }
+
                     var authors = await query
-                        .OrderBy(a => a.Surname)
-                        .ThenBy(a => a.FirstName)
                         .Select(a => new
                         {
                             a.Id,
                             a.FirstName,
                             a.Surname,
-                            a.DateOfBirth
+                            a.DateOfBirth,
+                            a.DateOfDeath,
+                            a.CountryOfBirth
                         })
                         .ToListAsync();
 
@@ -200,6 +232,27 @@ namespace BookLibrary
             {
                 MessageBox.Show($"Помилка при завантаженні БД. {ex.Message}");
             }
+        }
+        private async void dataGridViewAuthor_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string column = dataGridViewAuthor.Columns[e.ColumnIndex].DataPropertyName;
+
+            if (column == "Id")
+            {
+                return;
+            }
+
+            if (sortColumnAuthors == column)
+            {
+                sortAscendingAuthors = !sortAscendingAuthors;
+            }
+            else
+            {
+                sortColumnAuthors = column;
+                sortAscendingAuthors = true;
+            }
+
+            await UpdateAuthors();
         }
 
         private async void btnAddAuthor_Click(object sender, EventArgs e)

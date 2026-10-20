@@ -30,7 +30,14 @@ namespace BookLibrary.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CountryOfBirth")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateOfDeath")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
@@ -87,6 +94,46 @@ namespace BookLibrary.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("BookLibrary.Models.Client", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int?>("bookId")
+                        .HasColumnType("int")
+                        .HasColumnName("BookId");
+
+                    b.Property<DateTime?>("borrowUntil")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("BorrowUntil");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Password");
+
+                    b.Property<string>("username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("Username");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("username")
+                        .IsUnique();
+
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("BookLibrary.Models.Book", b =>

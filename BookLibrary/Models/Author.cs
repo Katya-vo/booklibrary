@@ -14,6 +14,8 @@ namespace BookLibrary.Models
         public string FirstName { get; set; }
         public string Surname { get; set; }
         public DateTime? DateOfBirth { get; set; }
+        public DateTime? DateOfDeath { get; set; }
+        public string CountryOfBirth { get; set; }
         public virtual ICollection<Book> Books { get; set; }
         public string Fullname => $"{FirstName} {Surname}";
 
